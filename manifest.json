@@ -1,0 +1,1 @@
+{"version": "1.0", "name": "Hello World", "dev_opts": [{"console_ip": "9.180.225.32"}], "description": "Application to display hello world", "uuid": "0f966463-15fc-451b-a862-4637a82326db", "areas": [{"url": "index", "text": "Hello World", "required_capabilities": ["ADMIN"], "id": "QHelloWorld", "description": "A Hello World app"}]}
