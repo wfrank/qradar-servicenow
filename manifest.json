@@ -1,1 +1,76 @@
-{"version": "1.0", "name": "Hello World", "dev_opts": [{"console_ip": "9.180.225.32"}], "description": "Application to display hello world", "uuid": "0f966463-15fc-451b-a862-4637a82326db", "areas": [{"url": "index", "text": "Hello World", "required_capabilities": ["ADMIN"], "id": "QHelloWorld", "description": "A Hello World app"}]}
+{
+    "configuration_pages": [
+        {
+            "description": "Configure ServiceNow Integration", 
+            "icon": null, 
+            "required_capabilities": [
+                "ADMIN"
+            ], 
+            "text": "Configure ServiceNow Integration", 
+            "url": "admin_screen"
+        }
+    ], 
+    "description": "ServiceNow Integration", 
+    "gui_actions": [
+        {
+            "description": "Create a ServiceNow Security Incident with details from this offense", 
+            "groups": [
+                "OffenseSummaryToolbar"
+            ], 
+            "icon": "static/images/now_icons.png", 
+            "id": "createSNSecInc", 
+            "javascript": "servicenow_qradar_createSICallback(result)", 
+            "rest_method": "offenseToSNIncident", 
+            "text": "Create ServiceNow Security Incident"
+        }, 
+        {
+            "description": "Create a ServiceNow Security Event with details from this offense", 
+            "groups": [
+                "OffenseSummaryToolbar"
+            ], 
+            "icon": "static/images/now_icons.png", 
+            "id": "createSNSecEvt", 
+            "javascript": "servicenow_qradar_createEvtCallback(result)", 
+            "rest_method": "offenseToSNEvent", 
+            "text": "Create ServiceNow Security Event"
+        }
+    ], 
+    "name": "ServiceNow Integration", 
+    "page_scripts": [
+        {
+            "app_name": "SEM", 
+            "page_id": "OffenseSummary", 
+            "scripts": [
+                "static/scripts/snow_callbacks.js"
+            ]
+        }
+    ], 
+    "rest_methods": [
+        {
+            "argument_names": [
+                "context"
+            ], 
+            "method": "GET", 
+            "name": "offenseToSNIncident", 
+            "url": "/offense_to_sn_incident"
+        }, 
+        {
+            "argument_names": [
+                "context"
+            ], 
+            "method": "GET", 
+            "name": "offenseToSNEvent", 
+            "url": "/offense_to_sn_event"
+        }, 
+        {
+            "argument_names": [
+                "context"
+            ], 
+            "method": "GET", 
+            "name": "getSNButtonConfig", 
+            "url": "/get_sn_button_config"
+        }
+    ], 
+    "uuid": "c4c92cc3-af95-473e-b8bf-67a1984de0cf", 
+    "version": "1.0.1"
+}

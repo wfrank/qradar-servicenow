@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <title>ServiceNow - Configuration</title>
+        <style type="text/css">
+            @font-face {
+                font-family:"retina_icons";
+                src:url("static/styles/retina_icons/retina_icons.eot?48bdb0212d24b6f282be47e489e72fa4");
+                src:url("static/styles/retina_icons/retina_icons.eot?#iefix") format("embedded-opentype"),
+                url("static/styles/retina_icons/retina_icons.woff?48bdb0212d24b6f282be47e489e72fa4") format("woff"),
+                url("static/styles/retina_icons/retina_icons.ttf?48bdb0212d24b6f282be47e489e72fa4") format("truetype");
+                font-weight:normal;
+                font-style:normal;
+            }
+        </style>
+        <link rel="stylesheet" href="static/styles/heisenberg_all.css">
+        <link rel="stylesheet" href="static/styles/admin_screen.css">
+        <script src="static/scripts/lib/jquery_includes.js"></script>
+        <script src="static/scripts/lib/heisenberg_all.js"></script>
+        <script src="static/scripts/admin_screen.js"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">
+                        <img height="20px" src="static/images/logo_service-now_light.png" alt="ServiceNow" title="ServiceNow">
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            {% for val in messages %}
+                <div class="alert alert-info alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    {{ val }}
+                </div>
+            {% endfor %}
+            <form method="post">
+                <h2 id="section_instance_config">Instance Configuration</h2>
+                <div class="form-group clearfix">
+                    <label for="instance">ServiceNow Instance URL</label>
+                    <a href="#" class="icon-help sn-popover" data-target-tpl='instance_help_tpl' style="padding-left: 3px"></a>
+                    <input type="text" value="{{ form.instance_url }}" class="form-control" id="instance" name="instance_url" placeholder="https://company.service-now.com">
+                </div>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <a href="#" class="icon-help sn-popover" data-target-tpl='username_help_tpl' style="padding-left: 3px"></a>
+                    <input type="text" value="{{ form.username }}" class="form-control" id="username" name="username" placeholder="Username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" value="{{ form.password }}" class="form-control" id="password" name="password" placeholder="Password">
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <label>
+                            <input type="checkbox" name="accept_all_certs" {% if form.accept_all_certs %} checked {% endif %}> Accept all certificates
+                            <a href="#" class="icon-help sn-popover" data-target-tpl='accept_all_certs_help_tpl' style="padding-left: 3px"></a>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <label>
+                            <input type="checkbox" name="show_event_button" {% if form.show_event_button %} checked {% endif %}> Show 'Create event' button
+                            <a href="#" class="icon-help sn-popover" data-target-tpl='show_event_button_help_tpl' style="padding-left: 3px"></a>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <label>
+                            <input type="checkbox" name="show_incident_button" {% if form.show_incident_button %} checked {% endif %}> Show 'Create incident' button
+                            <a href="#" class="icon-help sn-popover" data-target-tpl='show_incident_button_help_tpl' style="padding-left: 3px"></a>
+                        </label>
+                    </div>
+                </div>
+                <hr>
+
+                <h2 id="section_incident_config">Security Incident / Offense Mapping</h2>
+                <div class="row">
+                    <div class="col-xs-4"><label>ServiceNow Security Incident Field</label><a href="#" class="icon-help sn-popover" data-target-tpl='sn_incident_help_tpl' style="padding-left: 8px"></a></div>
+                    <div class="col-xs-4"><label>QRadar Value</label><a href="#" class="icon-help sn-popover" data-target-tpl='qradar_offense_help_tpl' style="padding-left: 8px"></a></div>
+                </div>
+                <div id="incident_mappings">
+                    {% for key, value in form.incident_offense_map | dictsort %}
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-xs-4"><input type="text" class="form-control key" id="incident_offense_map.key.{{ loop.index0 }}" value="{{ key }}" name="incident_offense_map.key.{{ loop.index0 }}"></div>
+                                <div class="col-xs-4"><input type="text" class="form-control val" id="incident_offense_map.value.{{ loop.index0 }}" value="{{ value }}" name="incident_offense_map.value.{{ loop.index0 }}"></div>
+                                <button type="button" class="btn btn-destructive remove_mapping" aria-label="Remove"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <input type="button" class="btn btn-default add_mapping" value="Add New Mapping">
+                </div>
+
+                <hr>
+                <h2 id="section_event_config">Security Event / Offense Mapping</h2>
+
+                <div class="row">
+                    <div class="col-xs-4"><label>ServiceNow Event Field</label><a href="#" class="icon-help sn-popover" data-target-tpl='sn_event_help_tpl' style="padding-left: 8px"></a></div>
+                    <div class="col-xs-4"><label>QRadar Value</label><a href="#" class="icon-help sn-popover" data-target-tpl='qradar_offense_help_tpl' style="padding-left: 8px"></a></div>
+                </div>
+                <div id="event_mappings">
+                    {% for key, value in form.event_offense_map | dictsort %}
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-xs-4"><input type="text" class="form-control key" id="event_offense_map.key.{{ loop.index0 }}" value="{{ key }}" name="event_offense_map.key.{{ loop.index0 }}"></div>
+                                <div class="col-xs-4"><input type="text" class="form-control val" id="event_offense_map.value.{{ loop.index0 }}" value="{{ value }}" name="event_offense_map.value.{{ loop.index0 }}"></div>
+                                <button type="button" class="btn btn-destructive remove_mapping" aria-label="Remove"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <input type="button" class="btn btn-default add_mapping" value="Add New Mapping">
+                </div>
+
+                <hr>
+                <h2 id="section_auto_send_config">Automatic Offense Transmission</h2>
+                <div id="auto_send_config">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <label>
+                                <input type="checkbox" name="auto_create_incidents" {% if form.auto_create_incidents %} checked {% endif %}> Automatically create incidents for matching offenses
+                                <a href="#" class="icon-help sn-popover" data-target-tpl='auto_incident_cb_help_tpl' style="padding-left: 3px"></a>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="incident_filter">Incident filter</label>
+                        <a href="#" class="icon-help sn-popover" data-target-tpl='incident_filter_help_tpl' style="padding-left: 3px"></a>
+                        <input type="text" value="{{ form.incident_filter }}" class="form-control" id="incident_filter" name="incident_filter" placeholder="Incident filter">
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <label>
+                                <input type="checkbox" name="auto_create_events" {% if form.auto_create_events %} checked {% endif %}> Automatically create events for matching offenses
+                                <a href="#" class="icon-help sn-popover" data-target-tpl='auto_event_cb_help_tpl' style="padding-left: 3px"></a>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="event_filter">Event filter</label>
+                        <a href="#" class="icon-help sn-popover" data-target-tpl='event_filter_help_tpl' style="padding-left: 3px"></a>
+                        <input type="text" value="{{ form.event_filter }}" class="form-control" id="event_filter" name="event_filter" placeholder="Event filter">
+                    </div>
+                    <div class="form-group">
+                        <label for="svc_account_token">Authorized service token</label>
+                        <a href="#" class="icon-help sn-popover" data-target-tpl='svc_account_token_help_tpl' style="padding-left: 3px"></a>
+                        <input type="text" value="{{ form.svc_account_token }}" class="form-control" id="svc_account_token" name="svc_account_token" placeholder="Authorized service token">
+                    </div>
+                </div>
+                <hr>
+
+                <h2 id="section_instance_config">Proxy Configuration (Optional)</h2>
+                <div class="form-group clearfix">
+                    <label for="proxy_url">Proxy URL</label>
+                    <a href="#" class="icon-help sn-popover" data-target-tpl='proxy_url_help_tpl' style="padding-left: 3px"></a>
+                    <input type="text" value="{{ form.proxy_url }}" class="form-control" id="proxy_url" name="proxy_url" placeholder="http://proxy.example.com:8888">
+                </div>
+                <div class="form-group">
+                    <label for="proxy_username">Proxy username</label>
+                    <a href="#" class="icon-help sn-popover" data-target-tpl='proxy_username_help_tpl' style="padding-left: 3px"></a>
+                    <input type="text" value="{{ form.proxy_username }}" class="form-control" id="proxy_username" name="proxy_username" placeholder="Username">
+                </div>
+                <div class="form-group">
+                    <label for="proxy_password">Proxy password</label>
+                    <input type="password" value="{{ form.proxy_password }}" class="form-control" id="proxy_password" name="proxy_password" placeholder="Password">
+                </div>
+                <hr>
+                <input type="submit" id="btn_save" class="btn btn-primary" value="Save">
+                <input type="button" id="btn_reset" class="btn btn-default" value="Reset">
+            </form>
+        </div>
+        <div class="hidden" id="mapping_tpl">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-4"><input type="text" class="form-control key"></div>
+                    <div class="col-xs-4"><input type="text" class="form-control val"></div>
+                    <button type="button" class="btn btn-destructive remove_mapping" aria-label="Remove"><span aria-hidden="true">&times;</span></button>
+                </div>
+            </div>
+        </div>
+        <div class="hidden" id="instance_help_tpl">
+            <p>The ServiceNow Instance URL should point to a valid ServiceNow instance with the Security Incident Response and Security Instance Response Event Management Support applications installed.</p>
+        </div>
+        <div class="hidden" id="username_help_tpl">
+            <p>The user specified should have the evt_mgmt_integration, import_set_loader, and import_transformer roles in ServiceNow.</p>
+        </div>
+        <div class="hidden" id="sn_incident_help_tpl">
+            <p>ServiceNow Security Incident Field should be the name of a field on the Security Incident (sn_si_incident) table</p>
+        </div>
+        <div class="hidden" id="sn_event_help_tpl">
+            <p>ServiceNow Event Field should be the name of a field on the Event (em_event) table</p>
+        </div>
+        <div class="hidden" id="qradar_offense_help_tpl">
+            <p>The QRadar value should be a <a target='_blank' href="http://jinja.pocoo.org/docs/dev/templates/">jinja</a> template.</p>
+            <p>Offense information is made available to the template and can be used to map offense values to ServiceNow fields.  The fields available can be found in the
+                <a target='_blank' href='https://www.ibm.com/support/knowledgecenter/SS42VS_7.2.7/com.ibm.qradar.doc/5.1--siem-offenses-GET.html'>QRadar Offense API documentation.</a>
+            </p>
+        </div>
+        <div class="hidden" id="auto_incident_cb_help_tpl">
+            <p>When checked, this will create a security incident in ServiceNow for offenses that match the Incident filter value</p>
+        </div>
+        <div class="hidden" id="incident_filter_help_tpl">
+            <p>The value for the Incident filter should be an offense filter to determine which QRadar offenses to automatically send to ServiceNow as Security Incidents.  This should be a valid
+                <a target="_blank" href="https://www.ibm.com/support/knowledgecenter/SS42VS_7.2.7/com.ibm.qradar.doc/c_rest_api_filtering.html">QRadar filter</a> for the
+                <a target="_blank" href="https://www.ibm.com/support/knowledgecenter/SS42VS_7.2.7/com.ibm.qradar.doc/5.1--siem-offenses-GET.html">Offense API.</a></p>
+        </div>
+        <div class="hidden" id="auto_event_cb_help_tpl">
+            <p>When checked, this will create an event in ServiceNow for offenses that match the Event filter value</p>
+        </div>
+        <div class="hidden" id="event_filter_help_tpl">
+            <p>The value for the Event filter should be an offense filter to determine which QRadar offenses to automatically send to ServiceNow as Events.  This should be a valid
+                <a target="_blank" href="https://www.ibm.com/support/knowledgecenter/SS42VS_7.2.7/com.ibm.qradar.doc/c_rest_api_filtering.html">QRadar filter</a> for the
+                <a target="_blank" href="https://www.ibm.com/support/knowledgecenter/SS42VS_7.2.7/com.ibm.qradar.doc/5.1--siem-offenses-GET.html">Offense API.</a></p>
+        </div>
+
+        <div class="hidden" id="svc_account_token_help_tpl">
+            <p>The Authorized service token should be a valid
+                <a target="_blank" href="https://www.ibm.com/support/knowledgecenter/SS42VS_7.2.7/com.ibm.qradar.doc/c_qradar_adm_man_auth_service.html">QRadar service token</a>
+                that has been granted access to look up offenses via the REST API.  This is used for automatic offense transmission.</p>
+        </div>
+        <div class="hidden" id="proxy_url_help_tpl">
+            <p>The proxy URL required for outbound requests from the QRadar server.  This is only required if the QRadar server is configured to require outbound traffic to pass through a proxy. The format of this URL should contain the protocol/scheme, DNS name/ip of the proxy server, and the port the proxy server is listening on.</p>
+        </div>
+        <div class="hidden" id="proxy_username_help_tpl">
+            <p>The proxy username required to authenticate against the proxy specified in the proxy URL.  This is only required if the proxy requires authentication.</p>
+        </div>
+        <div class="hidden" id="accept_all_certs_help_tpl">
+            <p>Indicates that application should accept any certificates from this host, including invalid certificates.  This is used in the event that a transparent proxy rewrites the certificate from ServiceNow in such a way that makes it invalid.  This flag allows requests to continue to be issued to ServiceNow.</p>
+        </div>
+        <div class="hidden" id="show_event_button_help_tpl">
+            <p>When checked, this will show the 'Create ServiceNow Security Event' toolbar button on the offenses screen</p>
+        </div>
+        <div class="hidden" id="show_incident_button_help_tpl">
+            <p>When checked, this will show the 'Create ServiceNow Security Incident' toolbar button on the offenses screen</p>
+        </div>
+    </body>
+</html>
