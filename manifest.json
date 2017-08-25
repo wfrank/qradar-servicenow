@@ -1,76 +1,67 @@
 {
-    "configuration_pages": [
-        {
-            "description": "Configure ServiceNow Integration", 
-            "icon": null, 
-            "required_capabilities": [
-                "ADMIN"
-            ], 
-            "text": "Configure ServiceNow Integration", 
-            "url": "admin_screen"
-        }
-    ], 
-    "description": "ServiceNow Integration", 
-    "gui_actions": [
-        {
-            "description": "Create a ServiceNow Security Incident with details from this offense", 
-            "groups": [
-                "OffenseSummaryToolbar"
-            ], 
-            "icon": "static/images/now_icons.png", 
-            "id": "createSNSecInc", 
-            "javascript": "servicenow_qradar_createSICallback(result)", 
-            "rest_method": "offenseToSNIncident", 
-            "text": "Create ServiceNow Security Incident"
-        }, 
-        {
-            "description": "Create a ServiceNow Security Event with details from this offense", 
-            "groups": [
-                "OffenseSummaryToolbar"
-            ], 
-            "icon": "static/images/now_icons.png", 
-            "id": "createSNSecEvt", 
-            "javascript": "servicenow_qradar_createEvtCallback(result)", 
-            "rest_method": "offenseToSNEvent", 
-            "text": "Create ServiceNow Security Event"
-        }
-    ], 
-    "name": "ServiceNow Integration", 
-    "page_scripts": [
-        {
-            "app_name": "SEM", 
-            "page_id": "OffenseSummary", 
-            "scripts": [
-                "static/scripts/snow_callbacks.js"
-            ]
-        }
-    ], 
-    "rest_methods": [
-        {
-            "argument_names": [
-                "context"
-            ], 
-            "method": "GET", 
-            "name": "offenseToSNIncident", 
-            "url": "/offense_to_sn_incident"
-        }, 
-        {
-            "argument_names": [
-                "context"
-            ], 
-            "method": "GET", 
-            "name": "offenseToSNEvent", 
-            "url": "/offense_to_sn_event"
-        }, 
-        {
-            "argument_names": [
-                "context"
-            ], 
-            "method": "GET", 
-            "name": "getSNButtonConfig", 
-            "url": "/get_sn_button_config"
-        }
-    ], 
-    "uuid": "c4c92cc3-af95-473e-b8bf-67a1984de0cf", 
-    "version": "1.0.1"
+  "version": "1.0",
+  "name": "ServiceNow Incident Integration",
+  "description": "Integration with incidents in ServiceNow",
+  "environment_variables": [
+    {
+      "name": "PATHSTART",
+      "value": "\/usr\/local\/bin"
+    }
+  ],
+  "dev_opts": [
+    {
+      "console_ip": "172.16.60.10"
+    }
+  ],
+  "uuid": "dfcd0416-6db7-4e45-a44b-c9b15b8776ed",
+  "configuration_pages": [
+    {
+      "description": "Configure ServiceNow Incident Integration",
+      "icon": "static/images/logo_service-now.png",
+      "required_capabilities": [
+        "ADMIN"
+      ],
+      "text": "Configure ServiceNow Incident Integration",
+      "url": "admin_screen"
+    }
+  ],
+  "gui_actions": [
+    {
+      "description": "Create a ServiceNow Incident with details from this offense",
+      "groups": [
+        "OffenseListToolbar",
+        "OffenseSummaryToolbar"
+      ],
+      "icon": "static/images/now_icons.png",
+      "id": "createOffenseIncident",
+      "javascript": "servicenow_app_click_incident_toolbar_button()",
+      "text": "ServiceNow"
+    }
+  ],
+  "page_scripts": [
+    {
+      "app_name": "SEM",
+      "page_id": "OffenseList",
+      "scripts": [
+        "static/qjslib/qappfw.js",
+        "static/scripts/snow_callbacks.js"
+      ]
+    },
+    {
+      "app_name": "SEM",
+      "page_id": "MyOffenseList",
+      "scripts": [
+        "static/qjslib/qappfw.js",
+        "static/scripts/snow_callbacks.js"
+      ]
+    },
+    {
+      "app_name": "SEM",
+      "page_id": "OffenseSummary",
+      "scripts": [
+        "static/qjslib/qappfw.js",
+        "static/scripts/snow_callbacks.js"
+      ]
+    }
+  ]
 }

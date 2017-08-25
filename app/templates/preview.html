@@ -1,0 +1,24 @@
+
+<div class="dijitDialogPaneContentArea">
+    <div data-dojo-type="dojox.layout.TableContainer"
+         data-dojo-props="cols:1, showLabels:true, labelWidth:50, spacing:3" id="fieldTable">
+            <input data-dojo-type="dijit/form/TextBox" type="text" name="short_description" id="short_description"
+                   title="Title:" value="{{ incident.short_description }}" style="width: 100%">
+            <textarea data-dojo-type="dijit/form/SimpleTextarea" name="description" id="description"
+                      title="Description:" rows="3" cols="50" style="width:auto;">{{ incident.description }}</textarea>
+            <select data-dojo-type="dijit/form/Select" name="assignment_group" id="assignment_group" title="Group:">
+                {% for key, value in config.group_map | dictsort %}
+                    <option value={{ value }}>{{ key }}</option>
+                {% endfor %}
+            </select>
+    </div>
+</div>
+
+<div class="dijitDialogPaneActionBar">
+    <button data-dojo-type="dijit/form/Button" type="submit">
+        OK
+    </button>
+    <button data-dojo-type="dijit/form/Button" type="button" onclick="javascript:dijit.byId('servicenow_incident_preview_dialog').hide()">
+        Cancel
+    </button>
+</div>

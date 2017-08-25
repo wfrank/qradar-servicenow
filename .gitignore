@@ -1,2 +1,5 @@
-qradar_appfw_venv/
+*.pyc
+.DS_Store
+.idea/
 store/
+qradar_appfw_venv/

@@ -25,12 +25,16 @@ $j( document ).ready(function(){
 		$j(context).prev('.form-group').after($cln);
 	};
 
-	$j('#event_mappings > .add_mapping').click(function(){
-		addMapping(this, "#event_mappings", "event_offense_map.");
+	$j('#offense_mappings > .add_mapping').click(function(){
+		addMapping(this, "#offense_mappings", "offense_map.");
 	});
 
-	$j('#incident_mappings > .add_mapping').click(function(){
-		addMapping(this, "#incident_mappings", "incident_offense_map.");
+	$j('#vulnerability_mappings > .add_mapping').click(function(){
+		addMapping(this, "#vulnerability_mappings", "vulnerability_map.");
+	});
+
+	$j('#group_mappings > .add_mapping').click(function(){
+		addMapping(this, "#group_mappings", "group_map.");
 	});
 
 	$j('.sn-popover').each(function() {

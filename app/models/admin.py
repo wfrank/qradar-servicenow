@@ -1,14 +1,12 @@
-__author__ = 'ServiceNow Inc.'
-
 import json
 import os
 import copy
-from app.models.crypto import SNCrypto
+from app.models.crypto import CryptoUtils
 
 from app.qpylib import qpylib
 
 
-class SNConfiguration(object):
+class ServiceNowConfiguration(object):
     filename = os.path.join(qpylib.get_store_path(),
                             'snow_config.json')
     _keyfile = os.path.join(qpylib.get_store_path(), 'shhh.txt')
@@ -20,7 +18,7 @@ class SNConfiguration(object):
             'username': '',
             'password': '',
             'svc_account_token': '',
-            'incident_offense_map': {
+            'offense_map': {
                 'short_description': 'QRadar-{{ offense.id }} - {{ offense.description }}',
                 'description': 'QRadar-{{ offense.id }} - {{ offense.description }}',
                 'cmdb_ci': '{{ offense.local_destination_addresses[0].local_destination_ip }}',
@@ -28,24 +26,15 @@ class SNConfiguration(object):
                 'source_ip': '{{ offense.source_addresses[0].source_ip }}',
                 'dest_ip': '{{ offense.local_destination_addresses[0].local_destination_ip }}'
             },
-            'event_offense_map': {
-                'node': '{{ offense.local_destination_addresses[0].local_destination_ip }}',
-                'type': '{{ offense.offense_type_name }}',
-                'resource': 'QRADAR-EVENT-OFFENSE-{{ offense.id }}',
-                'severity': '{{ 5 - (offense.severity /10 * 4)|round|int }}',
-                'description': 'QRadar-{{ offense.id }} - {{ offense.description }}'
-            },
+            'group_map': {},
             'auto_create_incidents': False,
-            'auto_create_events': False,
-            'filter_check_frequency_seconds': 90,
-            'event_filter': '',
-            'incident_filter': '',
+            'auto_close_offenses': True,
+            'auto_sync_frequency': 60,
+            'offense_filter': '',
             'proxy_url': '',
             'proxy_username': '',
             'proxy_password': '',
             'accept_all_certs': False,
-            'show_event_button': True,
-            'show_incident_button': True,
         }
         self._key = None
 
@@ -65,7 +54,7 @@ class SNConfiguration(object):
 
     def _create_key_file(self):
         with open(self._keyfile, 'w+') as data:
-            crypto = SNCrypto()
+            crypto = CryptoUtils()
             data.write(crypto.gen_key())
             data.close()
 
@@ -90,26 +79,26 @@ class SNConfiguration(object):
     def merge_config_with_submitted_form(self, form):
         # Simple data binding routine to map config with submitted form
         map_config = {
-            'incident_offense_map': {},
-            'event_offense_map': {}
+            'offense_map': {},
+            'group_map': {}
         }
-        inc_map_prefix = 'incident_offense_map.'
-        inc_key_prefix = inc_map_prefix + 'key.'
-        inc_val_prefix = 'incident_offense_map.value.'
-        evt_map_prefix = 'event_offense_map.'
-        evt_key_prefix = evt_map_prefix + 'key.'
-        evt_val_prefix = 'event_offense_map.value.'
-        crypto = SNCrypto()
+        ofs_map_prefix = 'offense_map.'
+        ofs_key_prefix = ofs_map_prefix + 'key.'
+        ofs_val_prefix = 'offense_map.value.'
+        grp_map_prefix = 'group_map.'
+        grp_key_prefix = grp_map_prefix + 'key.'
+        grp_val_prefix = 'group_map.value.'
+        crypto = CryptoUtils()
         self.get_key()
         for key, value in form.iteritems():
-            if str(key).startswith(inc_key_prefix) \
+            if str(key).startswith(ofs_key_prefix) \
                     and len(str(form[key]).strip()) > 0:
-                off_val = form[inc_val_prefix + key[len(inc_key_prefix):]]
-                map_config['incident_offense_map'][value] = off_val
-            elif str(key).startswith(evt_key_prefix) \
+                off_val = form[ofs_val_prefix + key[len(ofs_key_prefix):]]
+                map_config['offense_map'][value] = off_val
+            elif str(key).startswith(grp_key_prefix) \
                     and len(str(form[key]).strip()) > 0:
-                off_val = form[evt_val_prefix + key[len(evt_key_prefix):]]
-                map_config['event_offense_map'][value] = off_val
+                grp_val = form[grp_val_prefix + key[len(grp_key_prefix):]]
+                map_config['group_map'][value] = grp_val
             elif key == 'password':
                 if len(str(form[key]).strip()):
                     if not len(self.config.get('password')):
@@ -132,22 +121,14 @@ class SNConfiguration(object):
         if 'auto_create_incidents' in form:
             self.config['auto_create_incidents'] = True
         else:
-            self.config['auto_create_incidents'] = False
-        if 'auto_create_events' in form:
-            self.config['auto_create_events'] = True
+            self.config['auto_send_offenses'] = False
+        if 'auto_close_offenses' in form:
+            self.config['auto_close_offenses'] = True
         else:
-            self.config['auto_create_events'] = False
+            self.config['auto_close_offenses'] = False
         if 'accept_all_certs' in form:
             self.config['accept_all_certs'] = True
         else:
             self.config['accept_all_certs'] = False
-        if 'show_event_button' in form:
-            self.config['show_event_button'] = True
-        else:
-            self.config['show_event_button'] = False
-        if 'show_incident_button' in form:
-            self.config['show_incident_button'] = True
-        else:
-            self.config['show_incident_button'] = False
-        self.config['incident_offense_map'] = copy.deepcopy(map_config['incident_offense_map'])
-        self.config['event_offense_map'] = copy.deepcopy(map_config['event_offense_map'])
+        self.config['offense_map'] = copy.deepcopy(map_config['offense_map'])
+        self.config['group_map'] = copy.deepcopy(map_config['group_map'])
